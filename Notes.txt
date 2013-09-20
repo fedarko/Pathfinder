@@ -1,0 +1,68 @@
+Pathfinder
+
+Chemistry G/T
+Long Reach High School
+Science Fair 2011-2012
+
+Notes
+
+By Marcus Fedarko: marcus.fedarko@gmail.com
+-------------------------------------------
+
+--DIJKSTRAS--
+
+-One thing about Dijkstra's Algorithm is that it goes faster in bottleneck
+areas, such as those shown in level #3. This is due to the "frontier" of
+available nodes getting smaller, thus reducing time spent searching. In areas
+with wide open spaces, there is an inverse Gaussian relationship between the
+number of nodes checked and the speed with which the algorithm runs.
+
+--GENERAL--
+
+-For nonweighted graphs (grids) like those used in the program, there is a choice
+to be made regarding diagonal movement. For a cell c and its Moore neighborhood:
+
+1 2 3
+4 c 5
+6 7 8
+
+Some implementations made by other people assign extra costs to diagonal movement;
+that is, movement from c to 1, 3, 6, or 8. When implementing these algorithms, one
+can pick any of the following choices:
+
+1) Disallow diagonal movement and only allow up-down-left-right movement (from c,
+to only 2, 4, 5, and 7)
+
+2) Define the cost to move from c to a diagonal adjacent node as the square
+root of 2, or ~1.414, while the cost to move from c to normal UDLR nodes is only 1.
+
+3) Allow diagonal movement, and have it have the same cost as moving normally.
+
+I chose option #1, due to its simplicity, geometric accuracy, and common use in pathfinding
+of nonweighted graphs.
+
+--DF-UC-BF--
+
+-I decided not to implement Depth-First, Best-First, and Uniform-Cost searches. All were
+designed for other situations than the grid levels in the program and wouldn't have been
+efficient even when adapted. Depth- and Best-First were designed for weighted graphs and mazes, while
+Uniform-Cost was designed solely for weighted graphs.
+
+--A*-DIJKSTRAS--
+
+-With A*, the cost for a given node is F = G + H, where G is the cost to get to the node from
+the start and H is the heuristic estimate between the node and the end node on the to-be-determined
+path. Common H functions are Manhattan (the number of nodes in between the node and the end node,
+regardless of obstacles), Chebyshev (also known as Diagonal), and Euclidean. Chebyshev distance is
+only for implementations where diagonal movement is allowed; since it isn't, I only implemented
+Manhattan and Euclidean. There are different keys for running A* and Bi-A* with Manhattan or
+Euclidean distance.
+
+-It's also important to note that if you assign H a value of 0 - that is, completely forsake the
+use of heuristics - you end up with Dijkstra's Algorithm, which spreads uniformly in all directions
+regardless of the location of the end node.
+
+--A*-BIA*--
+
+-For simplicity and clarity, this implementation of A* does not use a priority queue, since it does
+not need one; its bidirectional counterpart does, but it steps through its priority queues manually.

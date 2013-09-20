@@ -1,0 +1,448 @@
+Pathfinder
+
+Chemistry G/T
+Long Reach High School
+Science Fair 2011-2012
+
+Update History
+
+By Marcus Fedarko: marcus.fedarko@gmail.com
+-------------------------------------------
+
+Jul. 15, 2011
+------------
+Progress: Just a blank exitable window.
+------------
+
+    -Added Main.py.
+	-Added class Main with methods __init__() and mainloop().
+
+    -Added run.py.
+
+    -Added Config.py.
+
+Jul. 16, 2011
+-------------
+Progress: Added Nodes, the Graphics Manager, and adding barrier nodes.
+-------------
+
+    -Added Node.py.
+	-Added class Node with methods __init__().
+
+    -Added GraphicsManager.py.
+	-Added class GraphicsManager with methods __init__() and update().
+
+    -Added to Main.mainloop() so that when the mouse is clicked, a barrier
+    node is added to the position of the mouse. Soon, I'll add adding multiple
+    types of nodes along with only being able to put nodes into a predefined
+    grid, instead of putting them in between tiles. Also, there's a bug with
+    the graphics in which nodes don't show up. Will fix all of these soon, but
+    it's 4:30 AM of July 17 now and I really have to sleep...
+
+Jul. 17, 2011
+-------------
+Progress: Fixed graphical errors, added in support for start/end nodes, broke off
+code into some separate functions.
+-------------
+
+    -Fixed a really simple error: the reason the background and nodes didn't
+    show up was because I forgot to call GraphicsManager.update() from mainloop().
+
+    -Added to Main.mainloop() to add start and end nodes.
+
+    -Added addNode() to GraphicsManager.
+
+    -Broke off some code from Node.__init__() into a new function, Node.assignColor().
+
+Jul. 19, 2011
+-------------
+Progress: Added buildEmptyNodes() to GraphicsManager and added more node groups.
+-------------
+
+    -Added buildEmptyNodes() to GraphicsManager so that now the screen is filled with
+    actual empty nodes, instead of just being filled with the color of empty nodes.
+
+    -Broke off GraphicsManager.nodes into four separate groups for each type of node.
+
+Jul. 20, 2011
+-------------
+Progress: Added the Node Manager and a lot of new methods to it, and also added adding
+empty nodes.
+-------------
+
+    -Added NodeManager.py.
+	-Added class NodeManager with methods __init__(), addNode(), roundPos(), and
+	buildEmptyNodes(). addNode() and buildEmptyNodes() are from GraphicsManager -
+	I decided GraphicsManager was getting too large and that it would be far cleaner
+	to add a dedicated Node Manager class.
+	
+	-Added to addNode() to check for any nodes in the same place as a new node and kill
+	the old nodes. This is done using a dictionary that is an attribute of NodeManager.
+	I also added to addNode() so that when a GroupSingle node (e.g. start/end) is
+	moved to a different location, a new empty node is inserted in place of the old
+	start/end node.
+
+    -Added to Main.mainloop() to add adding empty nodes.
+
+Jul. 21, 2011
+-------------
+Progress: Added a basic writeLevel() method to NodeManager.
+-------------
+
+    -Added NodeManager.writeLevel(). It raises an index error as of now, but it's an okay
+    foundation. Once I fix the bugs in it, a loadLevel() method will be created, and then it'll
+    be time to move away from the framework of the program into actually modelling the algorithms.
+
+    -Added to Main.mainloop() to call writeLevel() when the space key is pressed.
+
+Jul. 22, 2011
+-------------
+Progress: Added swapNode() to NodeManager, fixed writeLevel().
+-------------
+
+    -Fixed many of the errors raised by NodeManager.writeLevel(). All that's left for the method is
+    for it to output the level generated into a text file.
+
+    -Added NodeManager.swapNode(). It uses concatenation to replace a character in a string with
+    a node symbol, and is called by NodeManager.writeLevel().
+
+Jul. 23, 2011
+-------------
+Progress: Fixed an error in NodeManager.writeLevel().
+-------------
+
+    -Fixed an error in NodeManager.writeLevel() in which it was possible for nodes to be created outside
+    of the screen. This was achievable by pressing a key to create a start/end/empty node while keeping
+    the mouse outside of the screen. I fixed this by calling clamp_ip() on each node created in
+    NodeManager.addNode().
+
+Jul. 24, 2011
+-------------
+Progress: Added to NodeManager.writeLevel() to output the level into a text file, broke off some code from
+writeLevel() into convertLevel(), added NodeManager.loadLevel().
+-------------
+
+    -Added Levels.txt.
+
+    -Added to NodeManager.writeLevel() to output the contents of a level list into Levels.txt.
+
+    -Broke off the code from NodeManager.writeLevel() that reads the nodes on the screen and creates a
+    level list into a new method, NodeManager.convertLevel().
+
+    -Added NodeManager.loadLevel(). Right now, it only searches through Levels.txt for a level located at a
+    given position - it still needs to be able to load the level to the screen.
+
+    -Added to Main.mainloop() to call loadLevel() when a number key from 0-9 is pressed.
+
+    -Added to NodeManager.writeLevel() to count how many levels are in Levels.txt and truncate the last level
+    in the file if the upper limit has been reached. Additionally, the method now labels the first line of a
+    level list with the number of the level. There is an IOError raised: I'll fix it tomorrow, it's rather late
+    now.
+
+Jul. 25, 2011
+-------------
+Progress: Fixed an error in NodeManager.writeLevel().
+-------------
+
+    -Fixed an error in NodeManager.writeLevel() in which an IOError was raised. The problem was my opening the file
+    with the argument 'ra' instead of just 'r' or 'a'. Evidently, you can't open files in multiple modes, and in
+    retrospect, I probably should have thought of this sooner... I fixed the error by having two with statements
+    in NodeManager.writeLevel(): one for reading the file and counting the levels, and the other for writing the level
+    to the file and truncating it if necessary. However, truncating doesn't work as of now; nothing is removed from the
+    file. I'll fix the bug soon.
+
+Jul. 26, 2011
+-------------
+Progress: Fixed a truncation error in NodeManager.writeLevel().
+-------------
+
+    -Fixed an error in NodeManager.writeLevel(). When the maximum number of levels allowed in Levels.txt (10; this is
+    because a level is loaded by pressing a key from 0-9) is exceeded, the file is truncated up until the end of level
+    #8 (which is really level 9, since the levels are numbered starting with 0) and the new level is then added like usual.
+    The error was that nothing was truncated. The two causes of this were:
+	1. The for loop that traversed the lines of Levels.txt didn't break when the level limit was exceeded. Thus, the loop
+	continued down to the last line of the file and didn't truncate anything. I added in a break statement as soon as
+	the level limit's being exceeded was detected.
+	2. Since two with statements were used, the file position was reset. Because of this, calling file.truncate() with no
+	optional argument wouldn't work. I added in a variable to count the characters on each line and called file.truncate()
+	with this variable (minus 3 characters, however, to account for the header of level #9).
+
+    -Added in some print statements throughout the program. Not only do they help with debugging, but they make using the program
+    easier.
+
+Jul. 27, 2011
+-------------
+Progress: Added to NodeManager.loadLevel() to actually load levels to the screen. Aside from a few possible tweaks/bug fixes in the
+future, I'm finished with the infrastructure, if you will, of the program; now, it's time to move on to implementing the algorithms
+while making use of what I've done in these 12 days.
+-------------
+
+    -Added to NodeManager.loadLevel() to actually load levels. There is a bug in that levels are shifted 1 node to the right when loaded;
+    I'll try to fix this tomorrow.
+	-Actually, never mind; it's 11:56 pm and I just caught this bug, but it was rather interesting so I thought I'd mention it here.
+	The brackets of the rows in level lists, [], were being counted as columns of the level list and thus the position variables were
+	changed as if the brackets were nodes. I added in a little flag variable and check to fix this.
+
+Jul. 30, 2011
+-------------
+Progress: Added in a placeholder module and class for managing algorithms, worked on the structure of the program.
+-------------
+
+    -Added AlgorithmManager.py.
+	-Added class AlgorithmManager with methods __init__() and runAlgorithm(). Neither do anything as of now - currently, I'm mapping
+	out the structure of the program's dealings with algorithms.
+
+Jul. 31, 2011
+-------------
+Progress: Added the input-level interface of running algorithms.
+-------------
+
+    -Added to Main.mainloop() to call AlgorithmManager.runAlgorithm() when a key from F1-F6 is pressed.
+
+    -Added to AlgorithmManager.__init__() to create aliased copies of the node groups from GraphicsManager and create a dictionary relating
+    keys pressed to what algorithm to run.
+
+    -Added to AlgorithmManager.runAlgorithm() to convert the key passed as an argument to a string containing the name of the algorithm set
+    to run, and print out the string.
+
+    -Added to NodeManager.__init__() to create an instance of AlgorithmManager that is called by Main.mainloop(), as discussed above.
+
+Aug. 5, 2011
+-------------
+Progress: Added to the class structure of algorithms.
+-------------
+
+    -Added Algorithm.py.
+	-Added class Algorithm with method __init__().
+
+    -Added AStar.py, BestFirst.py, Bidirectional.py, DepthFirst.py, Dijkstras.py, and UniformCost.py, all with their respective classes
+    that inherit from Algorithm.Algorithm. For now, each class only contains an __init__() method that calls Algorithm.__init__(). However,
+    each class will soon contain method(s) that actually run the algorithm on the given nodes.
+    
+    -Added to AlgorithmManager.runAlgorithm() to call the above algorithm classes when their respective key is pressed while using an unpacked
+    AlgorithmManager.nodes variable as an argument for all the node groups. This system of storing nodes is, in my opinion, the best of both
+    worlds:
+	-It allows for aliasing. The node groups are copied into class-level variables of AlgorithmManager.
+	-It allows the nodes to be passed as just one unpacked tuple. This is more aesthetic than anything else, but it also saves time.
+	Every time runAlgorithm() is called, nodes is updated; this allows nodes to be passed as an argument without fear of it being outdated.
+
+Aug. 20, 2011
+-------------
+Progress: Began work on an implementation of Dijkstra's Algorithm.
+-------------
+
+    -Added to Dijkstras.__init__() to add all empty and end nodes to a sprite group for unvisited nodes.
+
+Aug. 21, 2011
+-------------
+Progress: Continued work on an implementation of Dijkstra's Algorithm.
+-------------
+
+    -Added to Dijkstras.__init__() to locate the Moore Neighborhood of a node using a dictionary.
+
+Aug. 22, 2011
+-------------
+Progress: Continued work on an implementation of Dijkstra's Algorithm.
+-------------
+
+    -Added markNode() and run() to Dijkstras. Both consist of code broken off from Dijkstras.__init__() for clarity and reusability.
+
+    -Fixed a few relatively minor bugs in Dijkstras.
+
+Nov. 20, 2011
+-------------
+Progress: Continued work on an implementation of Dijkstra's Algorithm.
+-------------
+
+    -Cleaned up some of the code in Dijkstras. Researched into implementing it and other algorithms.
+
+    -Researched the Uniform-Cost search algorithm, and noticed it was designed for weighted graphs - not the grid levels in the
+    program. Due to this, I decided not to implement the algorithm.
+
+Nov. 21, 2011
+-------------
+Progress: Finally added a working implementation of Dijkstra's Algorithm. It is rather slow, though.
+-------------
+
+    -Moved a general version of Dijkstras.markNode() to Algorithm in order to ease the implementation of algorithms.
+
+    -Added to Dijkstra.run() so now the path is drawn in blue while the algorithm is running. Additionally, it is actually
+    implemented now, although it is very slow. I need to decrease pq's size while maintaining order.
+
+Nov. 26, 2011
+-------------
+Progress: Dramatically sped up Dijkstra's Algorithm, and added a bit to the algorithm / general interface.
+-------------
+
+    -Sped up Dijkstra's Algorithm a lot by removing adjacent nodes from the group of unvisited nodes. What happened was that
+    the group of unvisited nodes remained large despite the number of nodes checked, which caused the program to take exponentially
+    more time to solve a level. This is reflected in that some of the more simple levels had times that stayed almost the same
+    when the fix was implemented due to the algorithm still operating at peak efficiency before it had a chance to really become slow
+    due to the brevity of the levels. This fix should make implementing the other algorithms a lot easier.
+
+    -Added to Dijkstras.run() to stop the algorithm from going in between two diagonal barriers. This is explained more in depth with
+    the use of an ASCII diagram in the comments for Dijkstras.run().
+
+    -Added to Dijkstras.run() to display a message if no path could be found from the start to the end. Handling this is already
+    taken care of - if there are no viable nodes that can be checked, the priority queue is done and the loop is naturally exited.
+
+    -Added GraphicsManager.clearVisited().
+
+Nov. 27, 2011
+-------------
+Progress: Polished up Dijkstra's Algorithm, added to the interface, and implemented Best-First search.
+-------------
+
+    -Added GraphicsManager.clearAll().
+
+    -After research into the matter, disallowed diagonal movement. This approach was both far more common than my previous approach
+    and more accurate; the cost to move diagonally on a grid is not the same as the cost to move UDLR.
+
+    -Generalized Dijkstras.run() into a method for Algorithm, Algorithm.run(). Dijkstras.run() and other algorithms' run() methods
+    will call the superclass run() method and then extend it.
+
+    -Added Algorithm.updateGraphics(), which consists of code broken off from Dijkstras.run().
+
+    -Implemented Best-First search. It messes up on levels 0, 2, 3, and 4.
+	-Added BestFirst.run().
+
+    -Implemented the A* search algorithm. It messes up on levels 0, 3, and 4.
+	-Added AStar.run(), AStar.manhattanHeuristic(), and AStar.updateGraphics().
+
+    -Researched Depth-First Search. It doesn't really seem like it would fit in a grid, much less be useful, unless it was in a maze;
+    due to this, I decided to not implement it.
+
+Nov. 29, 2011
+-------------
+Progress: Added a grid and started work on path retracing.
+-------------
+
+    -Added GraphicsManager.addGridLines() and support for lines in various manager classes. This helps a lot with seeing the
+    nodes' positions.
+
+    -Added path retracing for the A* search algorithm. The implementation is still a bit messed up, so I need to work on getting the
+    retracing to only follow the shortest path.
+    TODO:
+	-Add/fix path retracing for all 3 algorithms
+	-Fix A* and Best-First Search messing up at walls
+	-Transplant final A* code to Bidirectional
+
+Nov. 30, 2011
+-------------
+Progress: Began work on Bidirectional A* and cleaned up the code a bit.
+-------------
+
+    -Added Algorithm.printFinishedMessages(), which consists of common code to all the implemented algorithms.
+
+    -Added Bidirectional.run() and Bidirectional.checkBackwardsPQ().
+
+Dec. 1, 2011
+-------------
+Progress: Added an implementation of Bidirectional A*, as well as implementations of Manhattan and Euclidean heuristics for A*
+and Bi-A*.
+-------------
+
+    -Researched Best-First Search. It isn't very accurate at finding solutions, and comes in many different varieties - there is
+    no "official" way to implement it on a grid, as well as a relative lack of documentation. Due to this, I decided to not implement
+    it in the final version of the program.
+
+    -Added Bidirectional.checkForwardsPQ(), which consists of code broken off of Bidirectional.run() for brevity.
+
+    -Added options for Manhattan/Euclidean distance for A* and Bi-A*.
+    TODO:
+	-Fix A* and Bi-A* messing up at walls
+	-Add/fix path retracing; not strictly necessary, though
+
+Dec. 3, 2011
+------------
+Progress: Added an implementation of Bidirectional Dijkstra's Algorithm.
+------------
+
+    -Added in Bidirectional Dijsktra's Algorithm.
+	-Added BiDijkstras.py with class BiDijkstras with methods __init__(), run(), checkForwardsPQ(), checkBackwardsPQ(), and
+	updateGraphics().
+
+    -Added so that open (adjacent to visited) nodes now are highlighted with a different color.
+
+Dec. 5, 2011
+------------
+Progress: Fixed all variants of the A* and Bidirectional A* Algorithms so that they work in every situation and run fast. Additionally,
+added path reconstruction for single-path A* and Dijkstra's Algorithm; all that's left is to add path reconstruction for bidirectional
+algorithms. It's been a fun project, to say the least.
+------------
+
+    -Fixed the A* and Bidirectional A* algorithms. I realized how the algorithm should backtrack; it simply chooses the next open
+    node with the next-lowest F cost. I removed the current node from the open node list, which made the program work; I also added
+    to check for if an adjacent node is in the open list, and adjust its costs/parent if so.
+
+    -Added to Bidirectional A* to check if a list of open nodes is empty; if so, exit, since the nodes are isolated from each other. 
+
+    -Added Algorithm.reconstructPath(), which works for both A* heuristic variants and Dijkstra's Algorithm.
+
+    TODO:
+	-Fix path retracing for bidirectional A* and bidirectional Dijkstra's Algorithm
+	    -Collision points with multiple parents
+
+Dec. 6, 2011
+------------
+Progress: Added mouse dragging for drawing nodes.
+------------
+
+    -Added dragging of the mouse so that multiple nodes can be drawn at once. If the left mouse button is clicked, then a barrier is drawn,
+    like before; however, now, if the right mouse button is clicked, then an empty node is drawn. I got rid of using the "c" key to draw empty
+    nodes, which was cumbersome and imprecise. This will all make drawing levels a lot easier.
+    
+    TODO:
+	-Fix path retracing for bidirectional A* and bidirectional Dijkstra's Algorithm
+	    -Add in double-linked lists for these algorithms' nodes' parents
+
+Dec. 7, 2011
+------------
+Progress: Fixed a minor bug.
+------------
+
+    -Added to all the algorithms to check if the algorithm was successful before reconstructPath() is called.
+
+Dec. 12, 2011
+-------------
+Progress: Added path reconstruction for bidirectional algorithms. Discounting any possible future bugs, the programming is now finished; I
+may come back and add more algorithms, etc. later, but for now, I'm done with this project.
+-------------
+
+    -Added path reconstruction for bidirectional algorithms. This was done by having the backward path assign a variable for a backwards
+    parent to all nodes processed by that tree, and also by having the node of the collision point be assigned a marker variable. The program's
+    algorithm to reconstruct bidirectional paths involves finding the "collision node" and going forwards and backwards on both paths to the
+    start and end nodes, respectively. In effect, the algorithm involves the inverse of joining the two algorithms in the middle, which works
+    just as well as its more logical variant.
+
+Dec. 17, 2011
+-------------
+Progress: Fixed a bug in bidirectional path reconstruction.
+-------------
+
+    -Fixed a bug in bidirectional path reconstruction. In some mazes (not ones tested for the project, just certain types), the start or end
+    Node is the collision point between the two paths. However, in Algorithm.reconstructPath(), the program only checked empty nodes - not
+    start/end nodes - for being the intersection point. I added to Algorithm.reconstructPath() to check for start/end nodes and not color
+    them the path color if they were the intersection point.
+
+    -Added the option of coloring the path in bidirectional algorithms two different colors: one for the section of the path connecting the
+    intersection to the start node, and one for the section of the path connecting the intersection to the end node. This helps illustrate
+    the concepts behind bidirectional algorithms. As a default, the path is the normal color the entire way, but this can be modified easily
+    now in Config.py using PATHNODECOLOR_P (for start-intersection) and PATHNODECOLOR_Q (for end-intersection).
+
+Dec. 26, 2011
+-------------
+Progress: Fixed bugs in GraphicsManager's clearing functions and the handling of grid lines (or the lack thereof).
+-------------
+
+    -Fixed a bug in GraphicsManager.clearAll() and GraphicsManager.clearVisited().
+	Previously, in an attempt to fix a relatively rare bug where certain nodes couldn't be cleared after a long time of having the program
+    open, I changed the clearing functions to empty the node groups and call NodeManager.buildEmptyNodes(). This didn't clear the existing
+    nodes, and thus caused an error where no nodes could be cleared after an algorithm had been run until GraphicsManager.clearAll() was
+    called.
+	I fixed this so now each node is individually killed and replaced, as in the original code. However, this fixed the original bug as
+    well, since it doesn't rely on NodeManager.addNode() to kill existing nodes - it does it automatically. This works because NodeManager
+    uses an unaliased copy of rPos2node, and thus can miss killing nodes that were added after its copy of rPos2node was created.
+
+    -Added to GraphicsManager.__init__() to check if Config.SHOWGRIDLINES is False and create an empty GraphicsManager.lines if so. Since
+    GridManager.lines is passed as an argument to other functions, there needs to be at least a placeholder version of it.
